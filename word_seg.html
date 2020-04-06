@@ -57,7 +57,6 @@
               //第一步：创建需要的对象
               httpRequest.open('POST', 'https://aip.baidubce.com/rpc/2.0/nlp/v1/lexer?charset=UTF-8&access_token=24.24e7eea3f146fe8f8e9c038ecc0c464b.2592000.1587992793.282335-18934322', true); //第二步：打开连接/***发送json格式文件必须设置请求头 ；如下 - */
               httpRequest.setRequestHeader("Content-type","application/json");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-             
               httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
             /**
              * 获取数据后的处理程序
