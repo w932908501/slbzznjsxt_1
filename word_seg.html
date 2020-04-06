@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>搜索框</title>
+        <style>
+            *{
+            padding: 0;
+            margin: 0;
+        }
+        .search{
+            width: 30%;            
+            margin: 100px auto;
+            display: flex;
+            /*border: 1px solid red;*/
+        }
+        .search input{
+            float: left;
+            flex: 4;
+            height: 30px;
+            outline: none;
+            border: 1px solid red;
+            box-sizing: border-box;
+            padding-left: 10px;
+        }
+        .search button{
+            float: right;
+            flex: 1;
+            height: 30px;
+            background-color: red;
+            color: white;
+            border-style: none;
+            outline: none;
+        }
+        .search button i{
+            font-style: normal;
+        }
+        .search button:hover{
+            font-size: 16px;
+        }
+        </style>
+    </head>
+    
+    <body>
+        <div class="search">
+            <input type="text" placeholder="请输入..." name="" id="" value="" />
+            <button><i>搜索</i></button>
+        </div>
+        <script>
+            var input = document.getElementsByTagName('input')[0];
+            var button = document.getElementsByTagName('button')[0];
+            button.onclick = function () {
+                if(input.value.length != 0) {
+                   var obj = {"text": input.value};
+                   var httpRequest = new XMLHttpRequest();
+              //第一步：创建需要的对象
+              httpRequest.open('POST', 'https://aip.baidubce.com/rpc/2.0/nlp/v1/lexer?charset=UTF-8&access_token=24.24e7eea3f146fe8f8e9c038ecc0c464b.2592000.1587992793.282335-18934322', true); //第二步：打开连接/***发送json格式文件必须设置请求头 ；如下 - */
+              httpRequest.setRequestHeader("Content-type","application/json");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+             
+              httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
+            /**
+             * 获取数据后的处理程序
+             */
+             httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
+                if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+                    var json = httpRequest.responseText;//获取到服务端返回的数据
+                 
+                    var jsonObject=JSON.parse(json);
+                    for(var i=0;i<jsonObject.items.length;i++){
+                        console.log(jsonObject.items[i].item,"的词性是",jsonObject.items[i].pos);
+                    }
+                    
+                }
+                }
+            }      
+   
+    
+};
+        </script>
+    </body>
+</html>
