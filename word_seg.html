@@ -50,32 +50,64 @@
         <script>
             var input = document.getElementsByTagName('input')[0];
             var button = document.getElementsByTagName('button')[0];
+            
+
             button.onclick = function () {
                 if(input.value.length != 0) {
                    var obj = {"text": input.value};
                    var httpRequest = new XMLHttpRequest();
+
               //第一步：创建需要的对象
-              httpRequest.open('POST', 'https://aip.baidubce.com/rpc/2.0/nlp/v1/lexer?charset=UTF-8&access_token=24.24e7eea3f146fe8f8e9c038ecc0c464b.2592000.1587992793.282335-18934322', true); //第二步：打开连接/***发送json格式文件必须设置请求头 ；如下 - */
+              httpRequest.open('POST', 'https://aip.baidubce.com/rpc/2.0/nlp/v1/lexer_custom?charset=UTF-8&access_token=24.ea03b14a5ed462bcb641f67a93fe6feb.2592000.1589102808.282335-18934322', true); //第二步：打开连接/***发送json格式文件必须设置请求头 ；如下 - */
               httpRequest.setRequestHeader("Content-type","application/json");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
-             
               httpRequest.send(JSON.stringify(obj));//发送请求 将json写入send中
             /**
              * 获取数据后的处理程序
              */
+             
              httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
                 if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-                    var json = httpRequest.responseText;//获取到服务端返回的数据
+                    json = httpRequest.responseText;//获取到服务端返回的数据
                     var jsonObject=JSON.parse(json);
+                    var json,json_2;
+                    var b;
+                    var p,q,t;
+                    var flag=0;
+                    var n=new Array();
+                    var a=new Array();
                     for(var i=0;i<jsonObject.items.length;i++){
-                        console.log(jsonObject.items[i].item,"的词性是",jsonObject.items[i].pos);
+                        if (jsonObject.items[i].ne!=""){
+                            flag++;
+                            a[i]=jsonObject.items[i].ne;
+                            n[i]=jsonObject.items[i].item;
+                            if(flag==1)p=i;
+                            if(flag==2)q=i;
+                            if(flag==3)t=i;
+                        }  
+                    };
+                    b=a.join("");
+                    console.log(b);
                     }
-                    
+                if(b=="BZZBZ")console.log("match (a{title:'",n[p],"'}) return a");//查找名为xx(标准名)的标准                             
+                if(b=="BZZYWSJ")console.log("match (a{title:'",n[p],"'}) return a.",n[q]);//xxx(标准)的xx(标准的某种属性)是谁
+                if(b=="EJXLLDJ")console.log("match(a{title:'",n[p],"'})-[:等级包含]-(b)  return b");//xx(二级序列)是什么等级序列
+                if(b=="YJXLLDJ")console.log("match(a{title:'",n[p],"'})-[:等级包含]-(b)  return b");//xx(一级序列)是什么等级序列
+                if(b=="EJXLLYJXL")console.log("match(a{title:'",n[p],"'})-[:包含]-(b)-[:等级包含]-(c{title:'",n[q],"'})  return b");//xx(二级序列)在哪个一级序列之下？
+                if(b=="EJXLLBZZ")console.log("match(a{title:'",n[p],"'})-[r]-(b{title:'",n[q],"'})  return type(r)");//xx(等级序列)和xx(标准)有什么关联
+                
+                if(b=="ZTTBZ")console.log("match (a{status:'",n[p],"'}) return a");//找出状态为xx的所有标准
+                if(b=="YWSJJBZ")console.log("match (a{业务司局:'",n[p],"'}) return a");//xxx(业务司局)的有哪些标准   
+                if(b=="GJCBZ")console.log("match(a) where a.title =~'.*",n[p],".*'return a");//查询包含“xxx(关键词)”的所有标准 
+                if(b=="EJXL")console.log("match(a{title:'二级序列'})-[:等级包含]->(b)return b");//一共有哪些二级序列
+                if(b=="YJXL")console.log("match(a{title:'一级序列'})-[:等级包含]->(b)return b");//一共有哪些一级序列
+                if(b=="YJXLYJXLLBZ")console.log("match(a)-[:一级序列]-(b{title:'",n[q],"'})return a");//找出所有一级序列为xx的标准
+                if(b=="EJXLEJXLLBZ")console.log("match(a)-[:二级序列]-(b{title:'",n[q],"'})return a");//找出所有二级序列为xx的标准
                 }
-                }
-            }      
-   
-    
-};
+                
+             }
+            
+                }      
+ 
         </script>
     </body>
 </html>
